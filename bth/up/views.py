@@ -4,11 +4,10 @@ from .models import Product
 import math
 from django.templatetags.static import static
 
-# 渲染前端页面
 def index(request):
     return render(request, 'index.html')
 
-# API 端点
+# API 
 def get_similar_products(request):
     if request.method == 'GET':
         a = float(request.GET.get('a', 0))
@@ -25,7 +24,7 @@ def get_similar_products(request):
                 (product.bitter - c) ** 2 +
                 (product.spicy - d) ** 2
             )
-            image_url = static(product.image)  # 稍后修正路径问题
+            image_url = static(product.image) 
             results.append({
                 'name': product.name,
                 'distance': distance,
