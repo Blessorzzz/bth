@@ -1,0 +1,59 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>product recommend</title>
+    <style>
+        .slider { width: 200px; margin: 10px; }
+        .product { display: inline-block; margin: 10px; }
+    </style>
+</head>
+<body>
+    <div>
+        <label>sour: <input type="range" class="slider" id="sour" min="0" max="100" value="50"></label><br>
+        <label>sweet: <input type="range" class="slider" id="sweet" min="0" max="100" value="50"></label><br>
+        <label>bitter: <input type="range" class="slider" id="bitter" min="0" max="100" value="50"></label><br>
+        <label>spicy: <input type="range" class="slider" id="spicy" min="0" max="100" value="50"></label><br>
+    </div>
+    
+    <div id="results"></div>
+
+    <script>
+        const sliders = document.querySelectorAll('.slider');
+        const resultsDiv = document.getElementById('results');
+
+        function updateResults() {
+            const params = new URLSearchParams({
+                a: document.getElementById('sour').value,
+                b: document.getElementById('sweet').value,
+                c: document.getElementById('bitter').value,
+                d: document.getElementById('spicy').value
+            });
+
+            fetch(`/api/similar-products/?${params}`)  // 更新为新 API 路径
+                .then(response => response.json())
+                .then(data => {
+                    resultsDiv.innerHTML = '';
+                    data.products.forEach(product => {
+                        const div = document.createElement('div');
+                        div.className = 'product';
+                        div.innerHTML = `
+                            <img src="${product.image}" width="100">
+                            <p>${product.name}</p>
+                            <p>sour ${product.attributes.sour} sweet ${product.attributes.sweet} 
+                               bitter ${product.attributes.bitter} spicy ${product.attributes.spicy}</p>
+                            <p>similarity distance: ${product.distance.toFixed(2)}</p>
+                        `;
+                        resultsDiv.appendChild(div);
+                    });
+                });
+        }
+
+        sliders.forEach(slider => {
+            slider.addEventListener('input', updateResults);
+        });
+        
+        updateResults();
+    </script>
+</body>
+</html>
